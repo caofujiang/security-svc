@@ -7,28 +7,26 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
-	"github.com/EDDYCJY/go-gin-example/pkg/setting"
+	"github.com/secrity-svc/pkg/setting"
 	"time"
 )
 
 var db *gorm.DB
 
 type Model struct {
-	ID         int `gorm:"primary_key" json:"id"`
-	CreatedOn  int `json:"created_on"`
-	ModifiedOn int `json:"modified_on"`
-	DeletedOn  int `json:"deleted_on"`
+	ID int `gorm:"primary_key" json:"id"`
 }
 
 // Setup initializes the database instance
 func Setup() {
 	var err error
-	db, err = gorm.Open(setting.DatabaseSetting.Type, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+	setting.DatabaseSetting.Password = "Spx#123456"
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		setting.DatabaseSetting.User,
 		setting.DatabaseSetting.Password,
 		setting.DatabaseSetting.Host,
-		setting.DatabaseSetting.Name))
-
+		setting.DatabaseSetting.Name)
+	db, err = gorm.Open(setting.DatabaseSetting.Type, dsn)
 	if err != nil {
 		log.Fatalf("models.Setup err: %v", err)
 	}

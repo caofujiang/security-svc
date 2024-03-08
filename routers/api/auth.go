@@ -1,15 +1,16 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 
-	"github.com/EDDYCJY/go-gin-example/pkg/app"
-	"github.com/EDDYCJY/go-gin-example/pkg/e"
-	"github.com/EDDYCJY/go-gin-example/pkg/util"
-	"github.com/EDDYCJY/go-gin-example/service/auth_service"
+	"github.com/secrity-svc/pkg/app"
+	"github.com/secrity-svc/pkg/e"
+	"github.com/secrity-svc/pkg/util"
+	"github.com/secrity-svc/service/auth_service"
 )
 
 type auth struct {
@@ -32,6 +33,7 @@ func GetAuth(c *gin.Context) {
 	password := c.PostForm("password")
 
 	a := auth{Username: username, Password: password}
+	fmt.Print("auth:", a)
 	ok, _ := valid.Valid(&a)
 
 	if !ok {

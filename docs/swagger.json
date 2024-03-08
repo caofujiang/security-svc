@@ -1,501 +1,65 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "An example of gin",
-        "title": "Golang Gin API",
-        "termsOfService": "https://github.com/EDDYCJY/go-gin-example",
+        "description": "Secrity Capability",
+        "title": "Secrity Service API",
         "contact": {},
         "license": {
             "name": "MIT",
-            "url": "https://github.com/EDDYCJY/go-gin-example/blob/master/LICENSE"
+            "url": "https://github.com/secrity-svc/blob/master/LICENSE"
         },
         "version": "1.0"
     },
     "paths": {
-        "/api/v1/articles": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Get multiple articles",
-                "parameters": [
-                    {
-                        "description": "TagID",
-                        "name": "tag_id",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "State",
-                        "name": "state",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "CreatedBy",
-                        "name": "created_by",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            },
+        "/api/v1/content": {
             "post": {
+                "description": "通过 JSON 创建一个新的安全实验",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Add article",
+                "tags": [
+                    "创建安全实验"
+                ],
+                "summary": "Add Experiment content",
                 "parameters": [
                     {
-                        "description": "TagID",
-                        "name": "tag_id",
+                        "description": "host必填,其他选填",
+                        "name": "params",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "Title",
-                        "name": "title",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Desc",
-                        "name": "desc",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Content",
-                        "name": "content",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "CreatedBy",
-                        "name": "created_by",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "State",
-                        "name": "state",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
+                            "$ref": "#/definitions/v1.ExperimentParams"
                         }
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
-        "/api/v1/articles/{id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Get a single article",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Update article",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "TagID",
-                        "name": "tag_id",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Title",
-                        "name": "title",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Desc",
-                        "name": "desc",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Content",
-                        "name": "content",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "ModifiedBy",
-                        "name": "modified_by",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "State",
-                        "name": "state",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Delete article",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/tags": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Get multiple article tags",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Name",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "State",
-                        "name": "state",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            },
+        "/api/v1/pid": {
             "post": {
+                "description": "通过 JSON 销毁一个正在执行的安全实验",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Add article tag",
+                "tags": [
+                    "销毁安全实验"
+                ],
+                "summary": "Destroy A Running Secrity Experiment",
                 "parameters": [
                     {
-                        "description": "Name",
-                        "name": "name",
+                        "description": "安全实验唯一标识pid和进程pid必填",
+                        "name": "params",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/v1.ExperimentProcessId"
                         }
-                    },
-                    {
-                        "description": "State",
-                        "name": "state",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "CreatedBy",
-                        "name": "created_by",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/tags/export": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Export article tag",
-                "parameters": [
-                    {
-                        "description": "Name",
-                        "name": "name",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "State",
-                        "name": "state",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/tags/import": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Import Image",
-                "parameters": [
-                    {
-                        "type": "file",
-                        "description": "Image File",
-                        "name": "image",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/tags/{id}": {
-            "put": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Update article tag",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Name",
-                        "name": "name",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "State",
-                        "name": "state",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "ModifiedBy",
-                        "name": "modified_by",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Delete article tag",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -560,10 +124,119 @@
                 "code": {
                     "type": "integer"
                 },
-                "data": {
-                    "type": "object"
-                },
+                "data": {},
                 "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.ExperimentParams": {
+            "type": "object",
+            "required": [
+                "host"
+            ],
+            "properties": {
+                "command": {
+                    "description": "exec command (ssh|wmiexec)",
+                    "type": "string"
+                },
+                "cookie": {
+                    "description": "设置cookie",
+                    "type": "string"
+                },
+                "host": {
+                    "description": "支持单ip，多ip（“,”分割），网段,目标ip: 192.168.11.11 | 192.168.11.11-255 | 192.168.11.11,192.168.11.12",
+                    "type": "string"
+                },
+                "no_hosts": {
+                    "description": "扫描时,要跳过的ip: -hn 192.168.1.1/24",
+                    "type": "string"
+                },
+                "no_ports": {
+                    "description": "扫描时要跳过的端口,as: -pn 445",
+                    "type": "string"
+                },
+                "nopoc": {
+                    "description": "跳过web poc扫描",
+                    "type": "string"
+                },
+                "passfile": {
+                    "description": "指定爆破时的密码文件",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "指定爆破时的密码",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "fcgi、smb romote file path",
+                    "type": "string"
+                },
+                "ping": {
+                    "description": "使用ping代替icmp进行存活探测",
+                    "type": "string"
+                },
+                "pocname": {
+                    "description": "指定web poc的模糊名字, -pocname weblogic",
+                    "type": "string"
+                },
+                "pocpath": {
+                    "description": "指定poc路径",
+                    "type": "string"
+                },
+                "portadd": {
+                    "description": "新增需要扫描的端口,-pa 3389 (会在原有端口列表基础上,新增该端口)",
+                    "type": "string"
+                },
+                "ports": {
+                    "description": "设置扫描的端口: 22 | 1-65535 | 22,80,3306 (default \"21,22,80,81,135,139,443,445,1433,3306,5432,6379,7001,8000,8080,8089,9000,9200,11211,27017\")",
+                    "type": "string"
+                },
+                "proxy": {
+                    "description": "设置代理, -proxy http://127.0.0.1:8080",
+                    "type": "string"
+                },
+                "scantype": {
+                    "description": "置扫描模式: -m ssh (default \"all\")",
+                    "type": "string"
+                },
+                "sshkey": {
+                    "description": "ssh连接时,指定ssh私钥",
+                    "type": "string"
+                },
+                "threads": {
+                    "description": "扫描线程 (default 600)",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "端口扫描超时时间 (default 3)",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "指定Url扫描",
+                    "type": "string"
+                },
+                "user": {
+                    "description": "指定爆破时的用户名",
+                    "type": "string"
+                },
+                "userfile": {
+                    "description": "指定爆破时的用户名文件",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.ExperimentProcessId": {
+            "type": "object",
+            "required": [
+                "pid",
+                "uid"
+            ],
+            "properties": {
+                "pid": {
+                    "type": "integer"
+                },
+                "uid": {
                     "type": "string"
                 }
             }

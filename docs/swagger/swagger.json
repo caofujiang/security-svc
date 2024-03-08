@@ -1,13 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "An example of gin",
-        "title": "Golang Gin API",
-        "termsOfService": "https://github.com/EDDYCJY/go-gin-example",
+        "description": "Secrity Capability",
+        "title": "Secrity Service API",
+        "termsOfService": "https://github.com/secrity-svc",
         "contact": {},
         "license": {
             "name": "MIT",
-            "url": "https://github.com/EDDYCJY/go-gin-example/blob/master/LICENSE"
+            "url": "https://github.com/secrity-svc/blob/master/LICENSE"
         },
         "version": "1.0"
     },

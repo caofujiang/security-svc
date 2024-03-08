@@ -1,6 +1,8 @@
 package util
 
-import "github.com/EDDYCJY/go-gin-example/pkg/setting"
+import (
+	"github.com/secrity-svc/pkg/setting"
+)
 
 // Setup Initialize the util
 func Setup() {

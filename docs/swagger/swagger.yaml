@@ -12,12 +12,12 @@ definitions:
 host: '{{.Host}}'
 info:
   contact: {}
-  description: An example of gin
+  description: Secrity Capability
   license:
     name: MIT
-    url: https://github.com/EDDYCJY/go-gin-example/blob/master/LICENSE
-  termsOfService: https://github.com/EDDYCJY/go-gin-example
-  title: Golang Gin API
+    url: https://github.com/secrity-svc/blob/master/LICENSE
+  termsOfService: https://github.com/secrity-svc
+  title: Secrity Service API
   version: "1.0"
 paths:
   /api/v1/articles:

@@ -3,231 +3,131 @@ definitions:
     properties:
       code:
         type: integer
-      data:
-        type: object
+      data: {}
       msg:
         type: string
     type: object
+  v1.ExperimentParams:
+    properties:
+      command:
+        description: exec command (ssh|wmiexec)
+        type: string
+      cookie:
+        description: 设置cookie
+        type: string
+      host:
+        description: '支持单ip，多ip（“,”分割），网段,目标ip: 192.168.11.11 | 192.168.11.11-255
+          | 192.168.11.11,192.168.11.12'
+        type: string
+      no_hosts:
+        description: '扫描时,要跳过的ip: -hn 192.168.1.1/24'
+        type: string
+      no_ports:
+        description: '扫描时要跳过的端口,as: -pn 445'
+        type: string
+      nopoc:
+        description: 跳过web poc扫描
+        type: string
+      passfile:
+        description: 指定爆破时的密码文件
+        type: string
+      password:
+        description: 指定爆破时的密码
+        type: string
+      path:
+        description: fcgi、smb romote file path
+        type: string
+      ping:
+        description: 使用ping代替icmp进行存活探测
+        type: string
+      pocname:
+        description: 指定web poc的模糊名字, -pocname weblogic
+        type: string
+      pocpath:
+        description: 指定poc路径
+        type: string
+      portadd:
+        description: 新增需要扫描的端口,-pa 3389 (会在原有端口列表基础上,新增该端口)
+        type: string
+      ports:
+        description: '设置扫描的端口: 22 | 1-65535 | 22,80,3306 (default "21,22,80,81,135,139,443,445,1433,3306,5432,6379,7001,8000,8080,8089,9000,9200,11211,27017")'
+        type: string
+      proxy:
+        description: 设置代理, -proxy http://127.0.0.1:8080
+        type: string
+      scantype:
+        description: '置扫描模式: -m ssh (default "all")'
+        type: string
+      sshkey:
+        description: ssh连接时,指定ssh私钥
+        type: string
+      threads:
+        description: 扫描线程 (default 600)
+        type: string
+      time:
+        description: 端口扫描超时时间 (default 3)
+        type: string
+      url:
+        description: 指定Url扫描
+        type: string
+      user:
+        description: 指定爆破时的用户名
+        type: string
+      userfile:
+        description: 指定爆破时的用户名文件
+        type: string
+    required:
+    - host
+    type: object
+  v1.ExperimentProcessId:
+    properties:
+      pid:
+        type: integer
+      uid:
+        type: string
+    required:
+    - pid
+    - uid
+    type: object
 info:
   contact: {}
-  description: An example of gin
+  description: Secrity Capability
   license:
     name: MIT
-    url: https://github.com/EDDYCJY/go-gin-example/blob/master/LICENSE
-  termsOfService: https://github.com/EDDYCJY/go-gin-example
-  title: Golang Gin API
+    url: https://github.com/secrity-svc/blob/master/LICENSE
+  title: Secrity Service API
   version: "1.0"
 paths:
-  /api/v1/articles:
-    get:
-      parameters:
-      - description: TagID
-        in: body
-        name: tag_id
-        schema:
-          type: integer
-      - description: State
-        in: body
-        name: state
-        schema:
-          type: integer
-      - description: CreatedBy
-        in: body
-        name: created_by
-        schema:
-          type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: Get multiple articles
+  /api/v1/content:
     post:
+      consumes:
+      - application/json
+      description: 通过 JSON 创建一个新的安全实验
       parameters:
-      - description: TagID
+      - description: host必填,其他选填
         in: body
-        name: tag_id
+        name: params
         required: true
         schema:
-          type: integer
-      - description: Title
-        in: body
-        name: title
-        required: true
-        schema:
-          type: string
-      - description: Desc
-        in: body
-        name: desc
-        required: true
-        schema:
-          type: string
-      - description: Content
-        in: body
-        name: content
-        required: true
-        schema:
-          type: string
-      - description: CreatedBy
-        in: body
-        name: created_by
-        required: true
-        schema:
-          type: string
-      - description: State
-        in: body
-        name: state
-        required: true
-        schema:
-          type: integer
+          $ref: '#/definitions/v1.ExperimentParams'
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: Add article
-  /api/v1/articles/{id}:
-    delete:
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: Delete article
-    get:
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: Get a single article
-    put:
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: TagID
-        in: body
-        name: tag_id
-        schema:
-          type: string
-      - description: Title
-        in: body
-        name: title
-        schema:
-          type: string
-      - description: Desc
-        in: body
-        name: desc
-        schema:
-          type: string
-      - description: Content
-        in: body
-        name: content
-        schema:
-          type: string
-      - description: ModifiedBy
-        in: body
-        name: modified_by
-        required: true
-        schema:
-          type: string
-      - description: State
-        in: body
-        name: state
-        schema:
-          type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: Update article
-  /api/v1/tags:
-    get:
-      parameters:
-      - description: Name
-        in: query
-        name: name
-        type: string
-      - description: State
-        in: query
-        name: state
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: Get multiple article tags
+      responses: {}
+      summary: Add Experiment content
+      tags:
+      - 创建安全实验
+  /api/v1/pid:
     post:
+      consumes:
+      - application/json
+      description: 通过 JSON 销毁一个正在执行的安全实验
       parameters:
-      - description: Name
+      - description: 安全实验唯一标识pid和进程pid必填
         in: body
-        name: name
+        name: params
         required: true
         schema:
-          type: string
-      - description: State
-        in: body
-        name: state
-        schema:
-          type: integer
-      - description: CreatedBy
-        in: body
-        name: created_by
-        schema:
-          type: integer
+          $ref: '#/definitions/v1.ExperimentProcessId'
       produces:
       - application/json
       responses:
@@ -239,108 +139,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/app.Response'
-      summary: Add article tag
-  /api/v1/tags/{id}:
-    delete:
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: Delete article tag
-    put:
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Name
-        in: body
-        name: name
-        required: true
-        schema:
-          type: string
-      - description: State
-        in: body
-        name: state
-        schema:
-          type: integer
-      - description: ModifiedBy
-        in: body
-        name: modified_by
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: Update article tag
-  /api/v1/tags/export:
-    post:
-      parameters:
-      - description: Name
-        in: body
-        name: name
-        schema:
-          type: string
-      - description: State
-        in: body
-        name: state
-        schema:
-          type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: Export article tag
-  /api/v1/tags/import:
-    post:
-      parameters:
-      - description: Image File
-        in: formData
-        name: image
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: Import Image
+      summary: Destroy A Running Secrity Experiment
+      tags:
+      - 销毁安全实验
   /auth:
     get:
       parameters:
