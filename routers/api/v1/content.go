@@ -20,7 +20,7 @@ import (
 )
 
 type ExperimentParams struct {
-	Host     string `json:"host" binding:"required"`      //支持单ip，多ip（“,”分割），网段,目标ip: 192.168.11.11 | 192.168.11.11-255 | 192.168.11.11,192.168.11.12
+	Host     string `json:"host" binding:"required"`      //-h 支持单ip，多ip（“,”分割），网段,目标ip: 192.168.11.11 | 192.168.11.11-255 | 192.168.11.11,192.168.11.12
 	Ports    string `json:"ports" binding:"omitempty"`    //设置扫描的端口: 22 | 1-65535 | 22,80,3306 (default "21,22,80,81,135,139,443,445,1433,3306,5432,6379,7001,8000,8080,8089,9000,9200,11211,27017")
 	Portadd  string `json:"portadd" binding:"omitempty"`  //新增需要扫描的端口,-pa 3389 (会在原有端口列表基础上,新增该端口)
 	Pocname  string `json:"pocname" binding:"omitempty"`  //指定web poc的模糊名字, -pocname weblogic
@@ -164,14 +164,23 @@ func executeLongRunningScript(uid, args string) {
 	go func() {
 		done <- cmd.Wait()
 	}()
-
 	// 使用定时器,每5秒记录一次结果记录一次结果到文件
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 
+	//记录低于5秒的执行信息
 	reader := io.Reader(stdout)
-	buf := make([]byte, 100)
+	buf := make([]byte, 200)
+	n, err := reader.Read(buf)
+	if err != nil && err != io.EOF {
+		logging.Error(err.Error())
+	}
+	var output, outputTemp string
+	var i int
+	output = string(buf[:n])
+
 	for {
+		i++
 		select {
 		case <-ticker.C:
 			n, err := reader.Read(buf)
@@ -181,26 +190,31 @@ func executeLongRunningScript(uid, args string) {
 			if n == 0 {
 				break
 			}
-			output := string(buf[:n])
-
+			if i == 1 {
+				outputTemp = output + string(buf[:n])
+			} else {
+				outputTemp = string(buf[:n])
+			}
 			//根据uid更新库
 			contentService := content_service.Content{
-				Uid:    uid,
-				Result: output,
+				Uid: uid,
 			}
-			err = contentService.Edit(uid, output)
+			err = contentService.Edit(uid, outputTemp)
 			if err != nil {
 				logging.Error(err.Error())
 			}
 		case err := <-done:
+			ticker.Stop()
 			if err != nil {
 				logging.Error(err.Error())
 			} else {
-				fmt.Println("Script executed successfully.")
 				contentService := content_service.Content{
 					IsEnd: 1,
 				}
-				err := contentService.EditIsEndStatus(uid)
+				if i != 1 {
+					output = ""
+				}
+				err = contentService.EditIsEndStatus(uid, output)
 				if err != nil {
 					logging.Error(err.Error())
 				}

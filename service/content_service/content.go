@@ -29,10 +29,15 @@ func (t *Content) Edit(uid, newContent string) error {
 	return models.EditContent(uid, data)
 }
 
-func (t *Content) EditIsEndStatus(uid string) error {
+func (t *Content) EditIsEndStatus(uid, newContent string) error {
 	data := make(map[string]interface{})
 	data["is_end"] = 1
 	data["end_at"] = time.Now().Local()
+	content, err := models.ExistContentByUID(uid)
+	if err != nil {
+		return err
+	}
+	data["result"] = content.Result + newContent
 	return models.EditContent(uid, data)
 }
 
