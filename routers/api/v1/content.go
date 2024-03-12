@@ -1,8 +1,8 @@
 package v1
 
 import (
+	"bufio"
 	"fmt"
-	"io"
 	"net/http"
 	"os/exec"
 	"reflect"
@@ -122,106 +122,92 @@ func AddExperiment(c *gin.Context) {
 	appG.Response(http.StatusOK, e.SUCCESS, map[string]string{"uid": uid})
 
 }
+
 func executeLongRunningScript(uid, args string) {
-	osName := runtime.GOOS
-	var cmd *exec.Cmd
-	switch osName {
-	case "windows":
-		// CMD批处理脚本
-		script := "   ./fscan/fscan.exe   "
-		cmd = exec.Command("cmd.exe", "/C", script+" "+args)
-
-	case "darwin": // macOS
-		script := "   ./fscan/fscan_mac   "
-		cmd = exec.Command("bash", "-c", script+" "+args)
-
-	default: // 假设Linux和其他类Unix系统
-		//cmd = exec.Command("bash", "-c", fmt.Sprintf("./%s %s", script, strings.Join(args, " ")))
-		script := "   ./fscan/fscan   "
-		cmd = exec.Command("bash", "-c", script+" "+args)
-	}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		logging.Error(err.Error())
-	}
-	if err := cmd.Start(); err != nil {
-		logging.Error(err.Error())
-	}
-	pid := cmd.Process.Pid
-	//插入一条记录带uid，pid
-	contentService := content_service.Content{
-		Uid:     uid,
-		Pid:     pid,
-		Result:  "",
-		StartAt: time.Now().Local(),
-	}
-	err = contentService.Add()
-	if err != nil {
-		logging.Error(err.Error())
-	}
-
-	done := make(chan error, 1)
+	resultChan := make(chan string, 1)
+	doneChan := make(chan bool)
 	go func() {
-		done <- cmd.Wait()
-	}()
-	// 使用定时器,每5秒记录一次结果记录一次结果到文件
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
+		osName := runtime.GOOS
+		var cmd *exec.Cmd
+		switch osName {
+		case "windows":
+			// CMD批处理脚本
+			script := "   ./fscan/fscan.exe   "
+			cmd = exec.Command("cmd.exe", "/C", script+" "+args)
 
-	//记录低于5秒的执行信息
-	reader := io.Reader(stdout)
-	buf := make([]byte, 200)
-	n, err := reader.Read(buf)
-	if err != nil && err != io.EOF {
-		logging.Error(err.Error())
-	}
-	var output, outputTemp string
-	var i int
-	output = string(buf[:n])
+		case "darwin": // macOS
+			script := "   ./fscan/fscan_mac   "
+			cmd = exec.Command("bash", "-c", script+" "+args)
 
-	for {
-		i++
-		select {
-		case <-ticker.C:
-			n, err := reader.Read(buf)
-			if err != nil && err != io.EOF {
-				logging.Error(err.Error())
-			}
-			if n == 0 {
-				break
-			}
-			if i == 1 {
-				outputTemp = output + string(buf[:n])
-			} else {
-				outputTemp = string(buf[:n])
-			}
-			//根据uid更新库
-			contentService := content_service.Content{
-				Uid: uid,
-			}
-			err = contentService.Edit(uid, outputTemp)
-			if err != nil {
-				logging.Error(err.Error())
-			}
-		case err := <-done:
-			ticker.Stop()
-			if err != nil {
-				logging.Error(err.Error())
-			} else {
-				contentService := content_service.Content{
-					IsEnd: 1,
-				}
-				if i != 1 {
-					output = ""
-				}
-				err = contentService.EditIsEndStatus(uid, output)
-				if err != nil {
-					logging.Error(err.Error())
-				}
-			}
+		default: // 假设Linux和其他类Unix系统
+			//cmd = exec.Command("bash", "-c", fmt.Sprintf("./%s %s", script, strings.Join(args, " ")))
+			script := "   ./fscan/fscan   "
+			cmd = exec.Command("bash", "-c", script+" "+args)
+		}
+		stdout, err := cmd.StdoutPipe()
+		if err != nil {
+			logging.Error("cmd.StdoutPipe error :", err.Error())
 			return
 		}
-	}
+
+		if err := cmd.Start(); err != nil {
+			logging.Error("cmd.Start() error :", err.Error())
+			return
+		}
+		pid := cmd.Process.Pid
+		//插入一条记录带uid，pid
+		contentService := content_service.Content{
+			Uid:     uid,
+			Pid:     pid,
+			Result:  "",
+			StartAt: time.Now().Local(),
+		}
+		err = contentService.Add()
+		if err != nil {
+			logging.Error(err.Error())
+		}
+
+		scanner := bufio.NewScanner(stdout)
+		for scanner.Scan() {
+			resultChan <- scanner.Text() + "\n"
+		}
+		if err := cmd.Wait(); err != nil {
+			logging.Error("cmd.Wait() error: ", err.Error())
+			return
+		}
+		doneChan <- true
+	}()
+
+	go func() {
+		ticker := time.NewTicker(5 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case result := <-resultChan:
+				//根据uid更新库
+				contentService := content_service.Content{
+					Uid: uid,
+				}
+				err := contentService.Edit(uid, result)
+				if err != nil {
+					logging.Error("contentService Edit", err.Error())
+				}
+				//fmt.Println("storeToMySQL(result)", result)
+			case <-doneChan:
+				//fmt.Println("doneChan")
+				ticker.Stop()
+				//根据uid更新库
+				contentService := content_service.Content{}
+				err := contentService.EditIsEndStatus(uid)
+				if err != nil {
+					logging.Error("contentService Edit", err.Error())
+				}
+				return
+			case <-ticker.C:
+				//fmt.Println("ticker.C Still running...")
+			}
+		}
+	}()
 }
 
 // 处理参数
