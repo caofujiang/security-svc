@@ -12,6 +12,8 @@ FROM alpine:latest
 RUN apk update && apk upgrade
 RUN apk add bash
 RUN apk add --no-cache tzdata
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # 设置工作目录
 WORKDIR /app

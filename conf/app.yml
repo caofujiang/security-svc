@@ -1,0 +1,35 @@
+app:
+  pageSize: 10
+  JwtSecret: 233
+  prefixUrl: 'http://127.0.0.1:8000'
+  runtimeRootPath: runtime/
+  imageSavePath: upload/images/
+  exportSavePath: export/
+  qrCodeSavePath: qrcode/
+  fontSavePath: fonts/
+  logSavePath: logs/
+  logSaveName: log
+  logFileExt: log
+  timeFormat: 20060102
+server:
+  runMode: debug
+  httpPort: 8000
+  readTimeout: 60
+  writeTimeout: 60
+database:
+  type: mysql
+  user: root
+  password: 'Spx#123456'
+  host: '192.168.123.96'
+  port: 3306
+  dbName: blade_ops
+  tablePrefix: security_
+
+#  type: cmdb
+#  user: blade
+#  password: 'Spx#123456'
+#  host: '192.168.123.121'
+#  port: 17700
+#  dbName: blade_ops
+
+
